@@ -51,7 +51,7 @@ def main(tokenizer, model):
             client_socket.close()
 
 if __name__ == "__main__":
-    start_deepseek_coder()
+    tokenizer, model = start_deepseek_coder()
 
-    tokenizer, model = print("Deepseek-coder is ready to serve!")
+    print("Deepseek-coder is ready to serve!")
     main(tokenizer, model)
