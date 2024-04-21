@@ -1,6 +1,21 @@
 import socket
+import time
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
-def main():
+
+def start_deepseek_coder():
+
+    start_time = time.time()
+    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True, torch_dtype=torch.
+    bfloat16).cuda()
+
+    print(f"Loading model and tokiner took: {time.time() - start_time} seconds")
+
+    return tokenizer, model
+
+def main(tokenizer, model):
     # Create a socket object
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -21,14 +36,22 @@ def main():
             print("Connection from", client_address)
 
             # Receive data from the client
-            data = client_socket.recv(1024)
-            print("Received:", data.decode())
+            prompt = client_socket.recv(1024)
+            prompt = prompt.decode()
+            print("Received prompt:", prompt)
 
-            # Echo back the data
-            client_socket.sendall(data)
+            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+            outputs = model.generate(**inputs, max_length=128)
+            output = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+            # Send data to the client
+            client_socket.sendall(output.encode())
         finally:
             # Clean up the connection
             client_socket.close()
 
 if __name__ == "__main__":
-    main()
+    start_deepseek_coder()
+
+    tokenizer, model = print("Deepseek-coder is ready to serve!")
+    main(tokenizer, model)

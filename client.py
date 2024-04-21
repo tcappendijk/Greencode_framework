@@ -10,8 +10,8 @@ def main():
 
     try:
         # Send data to the server
-        message = "Hello, server!"
-        client_socket.sendall(message.encode())
+        prompt = input("Enter a prompt: ")
+        client_socket.sendall(prompt.encode())
 
         # Receive data from the server
         data = client_socket.recv(1024)
