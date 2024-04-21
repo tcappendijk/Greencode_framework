@@ -17,17 +17,17 @@ def start_deepseek_coder_base_6b():
     return tokenizer, model, "deepseek-coder-6.7b-base"
 
 
-def start_deepseek_coder_base_33b():
+# def start_deepseek_coder_base_33b():
 
-    start_time = time.time()
-    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-33b-base", trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-33b-base", trust_remote_code=True, torch_dtype=torch.
-    bfloat16).cuda()
+#     start_time = time.time()
+#     tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-33b-base", trust_remote_code=True)
+#     model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-33b-base", trust_remote_code=True, torch_dtype=torch.
+#     bfloat16).cuda()
 
-    print(f"Loading model and tokiner took: {time.time() - start_time} seconds")
-    print("Deepseek-coder-33b-base is ready to serve!")
+#     print(f"Loading model and tokiner took: {time.time() - start_time} seconds")
+#     print("Deepseek-coder-33b-base is ready to serve!")
 
-    return tokenizer, model, "deepseek-coder-33b-base"
+#     return tokenizer, model, "deepseek-coder-33b-base"
 
 
 def main(llms):
@@ -81,6 +81,6 @@ if __name__ == "__main__":
     tokenizer, model, name = start_deepseek_coder_base_6b()
     llms.append((tokenizer, model, name))
 
-    tokenizer, model, name = start_deepseek_coder_base_33b()
-    llms.append((tokenizer, model, name))
+    # tokenizer, model, name = start_deepseek_coder_base_33b()
+    # llms.append((tokenizer, model, name))
     main(llms)
