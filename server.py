@@ -20,7 +20,7 @@ def main(tokenizer, model):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # Bind the socket to a port
-    server_address = ('localhost', 12345)  # localhost and port 12345
+    server_address = ('localhost', 12345)
     server_socket.bind(server_address)
 
     # Listen for incoming connections
@@ -41,7 +41,7 @@ def main(tokenizer, model):
             print("Received prompt:", prompt)
 
             inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-            outputs = model.generate(**inputs, max_length=128)
+            outputs = model.generate(**inputs, max_length=256)
             output = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
             # Send data to the client
