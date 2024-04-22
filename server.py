@@ -62,9 +62,9 @@ def main(llms):
                 tokenizer, model, name = llm
                 output = ""
                 try:
-                    input = tokenizer(prompt, return_tensors="pt", max_length=1024, truncation=True, padding="max_length").input_ids.cuda()
-                    output = model.generate(input, max_length=1024, num_return_sequences=1, pad_token_id=50256, eos_token_id=50256)[0]
-                    output = tokenizer.decode(output, skip_special_tokens=True)
+                    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+                    outputs = model.generate(**inputs, max_length=4096)
+                    output = tokenizer.decode(outputs[0], skip_special_tokens=True)
                     code_output += f"Code completion using {name}:\n{output}\n"
                 except Exception as e:
                     print(f"Error while generating code completion using {name}: {e}")
