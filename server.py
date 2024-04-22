@@ -61,9 +61,10 @@ def main(llms):
             for llm in llms:
                 tokenizer, model, name = llm
                 output = ""
+                max_length = 4096
                 try:
-                    input = tokenizer(prompt, return_tensors="pt", max_length=1024, truncation=True, padding="max_length").input_ids.cuda()
-                    output = model.generate(input, max_length=1024, num_return_sequences=1, pad_token_id=50256, eos_token_id=50256)[0]
+                    input = tokenizer(prompt, return_tensors="pt", max_length=max_length, truncation=True, padding="max_length").input_ids.cuda()
+                    output = model.generate(input, max_length=max_length, num_return_sequences=1, pad_token_id=50256, eos_token_id=50256)[0]
                     output = tokenizer.decode(output, skip_special_tokens=True)
                     code_output += f"Code completion using {name}:\n{output}\n"
                 except Exception as e:
@@ -84,3 +85,5 @@ if __name__ == "__main__":
     # tokenizer, model, name = start_deepseek_coder_base_33b()
     # llms.append((tokenizer, model, name))
     main(llms)
+
+    Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.  You may assume that each input would have exactly one solution, and you may not use the same element twice.  You can return the answer in any order.
