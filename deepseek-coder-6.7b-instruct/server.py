@@ -45,6 +45,8 @@ def server():
 
     server_socket.listen(1)
 
+    print("Server started.")
+
     tokenizer, model, gpu_device = initialize_model()
 
     if tokenizer is None or model is None or gpu_device is None:
