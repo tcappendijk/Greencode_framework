@@ -1,0 +1,85 @@
+import socket
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+import subprocess
+
+
+def get_gpu_with_most_free_memory():
+    try:
+        result = subprocess.check_output(["nvidia-smi", "--query-gpu=memory.free,memory.total", "--format=csv,noheader,nounits"])
+
+        gpu_info = [line.strip().split(",") for line in result.decode("utf-8").split("\n") if line.strip()]
+        gpu_info = [(int(memory_free), int(memory_total)) for memory_free, memory_total in gpu_info]
+
+        max_free_memory = max(gpu_info, key=lambda x: x[0])[0]
+        gpu_index = gpu_info.index((max_free_memory, gpu_info[max_free_memory]))
+
+        return gpu_index
+    except Exception as e:
+        print(f"Error occurred while getting GPU information: {e}")
+        return None
+
+
+def initialize_model():
+    # deepseek-coder-6.7b-instruct
+
+    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
+
+    # Check for the gpu with the most free memory
+    gpu_index = get_gpu_with_most_free_memory()
+    if gpu_index is None:
+        return None, None, None
+
+    gpu_device = torch.device(f"cuda:{gpu_index}")
+    model = model.to(gpu_device)
+
+    return tokenizer, model, gpu_device
+
+
+def server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    server_address = ('localhost', 12345)
+    server_socket.bind(server_address)
+
+    server_socket.listen(1)
+
+    tokenizer, model, gpu_device = initialize_model()
+
+    if tokenizer is None or model is None or gpu_device is None:
+        print("Error occurred while initializing the model.")
+        return
+
+    print("Server is listening...")
+
+    while True:
+        client_socket, client_address = server_socket.accept()
+
+        try:
+            print("Connection from", client_address)
+
+            prompt = client_socket.recv(1024)
+            prompt = prompt.decode()
+            print("Received prompt:", prompt)
+
+            code_output = ""
+
+            messages=[
+                { 'role': 'user', 'content': prompt}
+            ]
+
+            inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(gpu_device)
+            # tokenizer.eos_token_id is the id of <|EOT|> token
+            outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+            print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))
+
+            client_socket.sendall(code_output.encode())
+        finally:
+            client_socket.close()
+
+def main():
+    server()
+
+if __name__ == "__main__":
+    main()
