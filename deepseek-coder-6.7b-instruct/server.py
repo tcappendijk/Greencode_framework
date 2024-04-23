@@ -6,13 +6,13 @@ import subprocess
 
 def get_gpu_with_most_free_memory():
     try:
-        result = subprocess.check_output(["nvidia-smi", "--query-gpu=memory.free,memory.total", "--format=csv,noheader,nounits"])
+        result = subprocess.check_output(["nvidia-smi", "--query-gpu=index,memory.free,memory.total", "--format=csv,noheader,nounits"])
 
-        gpu_info = [line.strip().split(",") for line in result.decode("utf-8").split("\n") if line.strip()]
-        gpu_info = [(int(memory_free), int(memory_total)) for memory_free, memory_total in gpu_info]
-
-        max_free_memory = max(gpu_info, key=lambda x: x[0])[0]
-        gpu_index = gpu_info.index((max_free_memory, gpu_info[max_free_memory]))
+        gpu_info = result.decode().strip().split('\n')
+        gpu_info = [info.split(', ') for info in gpu_info]
+        gpu_info = [(int(index), int(free_memory), int(total_memory)) for index, free_memory, total_memory in gpu_info]
+        gpu_info.sort(key=lambda x: x[1], reverse=True)
+        gpu_index = gpu_info[0][0]
 
         return gpu_index
     except Exception as e:
@@ -21,8 +21,6 @@ def get_gpu_with_most_free_memory():
 
 
 def initialize_model():
-    # deepseek-coder-6.7b-instruct
-
     tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
 
