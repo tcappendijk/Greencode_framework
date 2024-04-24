@@ -79,6 +79,7 @@ def server():
             client_socket.sendall(output.encode())
         finally:
             client_socket.close()
+            server_socket.close()
 
 def main():
     server()
