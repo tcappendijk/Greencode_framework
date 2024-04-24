@@ -98,6 +98,21 @@ tokenizer = None
 model = None
 gpu_device = None
 
+def get_gpu_with_most_free_memory():
+    try:
+        result = subprocess.check_output(["nvidia-smi", "--query-gpu=index,memory.free,memory.total", "--format=csv,noheader,nounits"])
+
+        gpu_info = result.decode().strip().split('\n')
+        gpu_info = [info.split(', ') for info in gpu_info]
+        gpu_info = [(int(index), int(free_memory), int(total_memory)) for index, free_memory, total_memory in gpu_info]
+        gpu_info.sort(key=lambda x: x[1], reverse=True)
+        gpu_index = gpu_info[0][0]
+
+        return gpu_index
+    except Exception as e:
+        print(f"Error occurred while getting GPU information: {e}")
+        return None
+
 def initialize_model():
     tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
@@ -115,20 +130,6 @@ def initialize_model():
 
 tokenizer, model, gpu_device = initialize_model()
 
-def get_gpu_with_most_free_memory():
-    try:
-        result = subprocess.check_output(["nvidia-smi", "--query-gpu=index,memory.free,memory.total", "--format=csv,noheader,nounits"])
-
-        gpu_info = result.decode().strip().split('\n')
-        gpu_info = [info.split(', ') for info in gpu_info]
-        gpu_info = [(int(index), int(free_memory), int(total_memory)) for index, free_memory, total_memory in gpu_info]
-        gpu_info.sort(key=lambda x: x[1], reverse=True)
-        gpu_index = gpu_info[0][0]
-
-        return gpu_index
-    except Exception as e:
-        print(f"Error occurred while getting GPU information: {e}")
-        return None
 
 
 async def handle_client(reader, writer):
