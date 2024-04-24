@@ -64,7 +64,6 @@ def server():
             print("Received prompt:", prompt)
 
             if prompt == "exit":
-                print("Exiting...")
                 break
 
             messages=[
@@ -77,11 +76,9 @@ def server():
             output = tokenizer.decode(outputs[0][len(inputs[0]):])
 
             client_socket.sendall(output.encode())
-            client_socket.sendall("Hello from server!".encode())
         finally:
             client_socket.close()
 
-    print("Connection closed.")
     server_socket.close()
 
 def main():

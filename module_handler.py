@@ -1,6 +1,7 @@
 from models.model_abstract import Model
 
 import os
+import threading
 import importlib.util
 
 class ModelHandler:
@@ -34,12 +35,30 @@ class ModelHandler:
         return self.models
 
     def initialize_models(self):
-        for model in self.models:
+
+        def initialize_model(model):
             model.initialize()
 
-    def handle_code_prompt(self, code_prompt):
+        threads = []
         for model in self.models:
-            model.handle_code_prompt(code_prompt)
+            thread = threading.Thread(target=initialize_model, args=(model,))
+            thread.start()
+            threads.append(thread)
+
+        for thread in threads:
+            thread.join()
+
+    def handle_code_prompt(self, code_prompt):
+        code_output_models = []
+        for model in self.models:
+            model_name = model.get_name()
+            code_output = model.handle_code_prompt(code_prompt)
+            code_output_models.append((model_name, code_output))
+        return code_output_models
+
+    def close_models(self):
+        for model in self.models:
+            model.close()
 
 
 # For testing now
@@ -53,6 +72,7 @@ if __name__ == "__main__":
         code_prompt = input("Enter code prompt: ")
 
         if code_prompt == "exit":
+            handler.close_models()
             break
 
-        handler.handle_code_prompt(code_prompt)
+        print(handler.handle_code_prompt(code_prompt)[0][1])
