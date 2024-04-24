@@ -45,11 +45,11 @@ def server():
 
     print("Server started.")
 
-    tokenizer, model, gpu_device = initialize_model()
-
-    if tokenizer is None or model is None or gpu_device is None:
-        print("Error occurred while initializing the model.")
-        return
+    # tokenizer, model, gpu_device = initialize_model()
+#
+    # if tokenizer is None or model is None or gpu_device is None:
+    #     print("Error occurred while initializing the model.")
+    #     return
 
     print("Server is listening...")
 
@@ -71,12 +71,13 @@ def server():
                 { 'role': 'user', 'content': prompt}
             ]
 
-            inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(gpu_device)
-            outputs = model.generate(inputs, max_new_tokens=512, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
+            # inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(gpu_device)
+            # outputs = model.generate(inputs, max_new_tokens=512, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
 
-            output = tokenizer.decode(outputs[0][len(inputs[0]):])
+            # output = tokenizer.decode(outputs[0][len(inputs[0]):])
 
-            client_socket.sendall(output.encode())
+            # client_socket.sendall(output.encode())
+            client_socket.sendall("Hello from server!".encode())
         finally:
             print("Connection closed.")
             client_socket.close()
