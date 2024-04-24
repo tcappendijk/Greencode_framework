@@ -71,7 +71,7 @@ def server():
             ]
 
             inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(gpu_device)
-            outputs = model.generate(inputs, max_new_tokens=512, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
+            outputs = model.generate(inputs, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
 
             output = tokenizer.decode(outputs[0][len(inputs[0]):])
 
