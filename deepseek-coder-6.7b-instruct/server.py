@@ -127,10 +127,7 @@ def initialize_model():
 
     return tokenizer, model, gpu_device
 
-
-tokenizer, model, gpu_device = initialize_model()
-
-
+# tokenizer, model, gpu_device = initialize_model()
 
 async def handle_client(reader, writer):
     client_address = writer.get_extra_info('peername')
@@ -142,7 +139,11 @@ async def handle_client(reader, writer):
         print("Received prompt:", prompt)
 
         if prompt == "exit":
-            return
+            writer.close()
+            await writer.wait_closed()
+
+            # This is not the best way to exit the server, but it works for now. I cannot find a way to not busy wait for the server to close.
+            exit(0)
 
         messages = [{'role': 'user', 'content': prompt}]
 
