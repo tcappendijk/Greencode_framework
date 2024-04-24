@@ -63,6 +63,9 @@ def server():
             prompt = prompt.decode()
             print("Received prompt:", prompt)
 
+            if prompt == "exit":
+                break
+
             messages=[
                 { 'role': 'user', 'content': prompt}
             ]
