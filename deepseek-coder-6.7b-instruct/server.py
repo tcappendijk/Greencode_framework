@@ -41,6 +41,7 @@ def server():
     server_address = ('localhost', 12345)
     server_socket.bind(server_address)
 
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.listen(1)
 
     print("Server started.")
