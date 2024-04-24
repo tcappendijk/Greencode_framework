@@ -127,7 +127,7 @@ def initialize_model():
 
     return tokenizer, model, gpu_device
 
-# tokenizer, model, gpu_device = initialize_model()
+tokenizer, model, gpu_device = initialize_model()
 
 async def handle_client(reader, writer):
     client_address = writer.get_extra_info('peername')
