@@ -156,13 +156,14 @@ async def handle_client(reader, writer):
     finally:
         writer.close()
 
-def main():
-    server = asyncio.start_server(handle_client, 'localhost', 12345)
+async def main():
+    server = await asyncio.start_server(handle_client, 'localhost', 12345)
 
     tokenizer, model, gpu_device = initialize_model()
 
-    print("Server started.")
-    server.serve_forever()
+    async with server:
+        print("Server started.")
+        await server.serve_forever()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
