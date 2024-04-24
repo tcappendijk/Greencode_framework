@@ -98,6 +98,23 @@ tokenizer = None
 model = None
 gpu_device = None
 
+def initialize_model():
+    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
+
+    # Check for the gpu with the most free memory
+    gpu_index = get_gpu_with_most_free_memory()
+    if gpu_index is None:
+        return None, None, None
+
+    gpu_device = torch.device(f"cuda:{gpu_index}")
+    model = model.to(gpu_device)
+
+    return tokenizer, model, gpu_device
+
+
+tokenizer, model, gpu_device = initialize_model()
+
 def get_gpu_with_most_free_memory():
     try:
         result = subprocess.check_output(["nvidia-smi", "--query-gpu=index,memory.free,memory.total", "--format=csv,noheader,nounits"])
@@ -113,19 +130,6 @@ def get_gpu_with_most_free_memory():
         print(f"Error occurred while getting GPU information: {e}")
         return None
 
-def initialize_model():
-    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
-
-    # Check for the gpu with the most free memory
-    gpu_index = get_gpu_with_most_free_memory()
-    if gpu_index is None:
-        return None, None, None
-
-    gpu_device = torch.device(f"cuda:{gpu_index}")
-    model = model.to(gpu_device)
-
-    return tokenizer, model, gpu_device
 
 async def handle_client(reader, writer):
     client_address = writer.get_extra_info('peername')
@@ -158,8 +162,6 @@ async def handle_client(reader, writer):
 
 async def main():
     server = await asyncio.start_server(handle_client, 'localhost', 12345)
-
-    tokenizer, model, gpu_device = initialize_model()
 
     async with server:
         print("Server started.")
