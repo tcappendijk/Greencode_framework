@@ -8,7 +8,6 @@ def client(prompt: str):
     client_socket.connect(server_address)
 
     try:
-        prompt = input("Enter a prompt: ")
         client_socket.sendall(prompt.encode())
 
         data = client_socket.recv(1024)
