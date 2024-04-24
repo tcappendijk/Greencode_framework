@@ -78,6 +78,7 @@ def server():
 
             client_socket.sendall(output.encode())
         finally:
+            print("Connection closed.")
             client_socket.close()
             server_socket.close()
 
