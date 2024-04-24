@@ -64,6 +64,7 @@ def server():
             print("Received prompt:", prompt)
 
             if prompt == "exit":
+                print("Exiting...")
                 break
 
             messages=[
