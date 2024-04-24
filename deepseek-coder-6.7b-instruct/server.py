@@ -94,6 +94,10 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import subprocess
 
+tokenizer = None
+model = None
+gpu_device = None
+
 def get_gpu_with_most_free_memory():
     try:
         result = subprocess.check_output(["nvidia-smi", "--query-gpu=index,memory.free,memory.total", "--format=csv,noheader,nounits"])
@@ -127,7 +131,6 @@ async def handle_client(reader, writer):
     client_address = writer.get_extra_info('peername')
     print("Connection from", client_address)
 
-    tokenizer, model, gpu_device = initialize_model()
     try:
         prompt = await reader.read(1024)
         prompt = prompt.decode()
@@ -153,12 +156,13 @@ async def handle_client(reader, writer):
     finally:
         writer.close()
 
-async def main():
-    server = await asyncio.start_server(handle_client, 'localhost', 12345)
+def main():
+    server = asyncio.start_server(handle_client, 'localhost', 12345)
 
-    async with server:
-        print("Server started.")
-        await server.serve_forever()
+    tokenizer, model, gpu_device = initialize_model()
+
+    print("Server started.")
+    server.serve_forever()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
