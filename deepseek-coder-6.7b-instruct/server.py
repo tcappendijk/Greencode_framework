@@ -94,12 +94,11 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import subprocess
 
-async def get_gpu_with_most_free_memory_async():
+def get_gpu_with_most_free_memory():
     try:
-        result = await asyncio.create_subprocess_shell("nvidia-smi --query-gpu=index,memory.free,memory.total --format=csv,noheader,nounits", stdout=subprocess.PIPE)
-        output = await result.stdout.read()
+        result = subprocess.check_output(["nvidia-smi", "--query-gpu=index,memory.free,memory.total", "--format=csv,noheader,nounits"])
 
-        gpu_info = output.decode().strip().split('\n')
+        gpu_info = result.decode().strip().split('\n')
         gpu_info = [info.split(', ') for info in gpu_info]
         gpu_info = [(int(index), int(free_memory), int(total_memory)) for index, free_memory, total_memory in gpu_info]
         gpu_info.sort(key=lambda x: x[1], reverse=True)
@@ -110,11 +109,12 @@ async def get_gpu_with_most_free_memory_async():
         print(f"Error occurred while getting GPU information: {e}")
         return None
 
-async def initialize_model_async():
+def initialize_model():
     tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16)
 
-    gpu_index = await get_gpu_with_most_free_memory_async()
+    # Check for the gpu with the most free memory
+    gpu_index = get_gpu_with_most_free_memory()
     if gpu_index is None:
         return None, None, None
 
@@ -123,7 +123,7 @@ async def initialize_model_async():
 
     return tokenizer, model, gpu_device
 
-async def handle_client(reader, writer):
+async def handle_client(reader, writer, tokenizer, model, gpu_device):
     client_address = writer.get_extra_info('peername')
     print("Connection from", client_address)
 
@@ -137,7 +137,6 @@ async def handle_client(reader, writer):
 
         messages = [{'role': 'user', 'content': prompt}]
 
-        tokenizer, model, gpu_device = await initialize_model_async()
 
         if tokenizer is None or model is None or gpu_device is None:
             print("Error occurred while initializing the model.")
@@ -154,7 +153,8 @@ async def handle_client(reader, writer):
         writer.close()
 
 async def main():
-    server = await asyncio.start_server(handle_client, 'localhost', 12345)
+    tokenizer, model, gpu_device = initialize_model()
+    server = await asyncio.start_server(handle_client, 'localhost', 12345, tokenizer, model, gpu_device)
 
     async with server:
         print("Server started.")
