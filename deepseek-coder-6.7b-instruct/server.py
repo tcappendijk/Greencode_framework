@@ -77,8 +77,6 @@ def server():
             output = tokenizer.decode(outputs[0][len(inputs[0]):])
 
             client_socket.sendall(output.encode())
-        except Exception as e:
-            print(f"Error occurred while handling the prompt: {e}")
         finally:
             print("Connection closed.")
             client_socket.close()
