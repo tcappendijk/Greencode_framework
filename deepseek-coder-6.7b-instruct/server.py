@@ -63,18 +63,17 @@ def server():
             prompt = prompt.decode()
             print("Received prompt:", prompt)
 
-            code_output = ""
-
             messages=[
                 { 'role': 'user', 'content': prompt}
             ]
 
             inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(gpu_device)
             # tokenizer.eos_token_id is the id of <|EOT|> token
-            outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
-            print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))
+            outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
 
-            client_socket.sendall(code_output.encode())
+            output = tokenizer.decode(outputs[0][len(inputs[0]):])
+
+            client_socket.sendall(output.encode())
         finally:
             client_socket.close()
 
