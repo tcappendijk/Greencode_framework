@@ -8,6 +8,7 @@ def client(ip_address, port, prompt: str):
     client_socket.connect(server_address)
 
     try:
+        print("send prompt to server")
         client_socket.sendall(prompt.encode())
 
         data = client_socket.recv(1024)
