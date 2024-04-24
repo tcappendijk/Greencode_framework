@@ -4,11 +4,10 @@ import argparse
 def client(ip_address, port, prompt: str):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    server_address = (ip_address, port)  # localhost and port 12345
+    server_address = (ip_address, port)
     client_socket.connect(server_address)
 
     try:
-        print("send prompt to server")
         client_socket.sendall(prompt.encode())
 
         data = client_socket.recv(1024)
