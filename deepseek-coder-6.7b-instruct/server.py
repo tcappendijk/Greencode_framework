@@ -123,10 +123,11 @@ def initialize_model():
 
     return tokenizer, model, gpu_device
 
-async def handle_client(reader, writer, tokenizer, model, gpu_device):
+async def handle_client(reader, writer):
     client_address = writer.get_extra_info('peername')
     print("Connection from", client_address)
 
+    tokenizer, model, gpu_device = initialize_model()
     try:
         prompt = await reader.read(1024)
         prompt = prompt.decode()
@@ -153,8 +154,7 @@ async def handle_client(reader, writer, tokenizer, model, gpu_device):
         writer.close()
 
 async def main():
-    tokenizer, model, gpu_device = initialize_model()
-    server = await asyncio.start_server(handle_client, 'localhost', 12345, tokenizer, model, gpu_device)
+    server = await asyncio.start_server(handle_client, 'localhost', 12345)
 
     async with server:
         print("Server started.")
