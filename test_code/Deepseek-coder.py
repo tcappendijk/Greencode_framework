@@ -5,6 +5,9 @@ import time
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B")
+
 device0 = torch.device("cuda:0")
 device1 = torch.device("cuda:1")
 
