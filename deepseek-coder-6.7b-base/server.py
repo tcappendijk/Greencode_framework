@@ -66,14 +66,11 @@ def server():
             if prompt == "exit":
                 break
 
-            messages=[
-                { 'role': 'user', 'content': prompt}
-            ]
-
-            inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(gpu_device)
-            outputs = model.generate(inputs, max_new_tokens=1024, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
+            inputs = tokenizer(prompt, return_tensors="pt").to(gpu_device)
+            outputs = model.generate(**inputs, max_length=128)
 
             output = tokenizer.decode(outputs[0][len(inputs[0]):])
+            # output = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
             client_socket.sendall(output.encode())
         finally:
