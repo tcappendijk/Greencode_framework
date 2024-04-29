@@ -21,8 +21,8 @@ def get_gpu_with_most_free_memory():
 
 
 def initialize_model():
-    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", local_files_only=True)
-    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", local_files_only=True, torch_dtype=torch.bfloat16)
+    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True, torch_dtype=torch.bfloat16)
 
     # Check for the gpu with the most free memory
     gpu_index = get_gpu_with_most_free_memory()
