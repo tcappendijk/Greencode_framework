@@ -67,7 +67,7 @@ def server():
                 break
 
             inputs = tokenizer(prompt, return_tensors="pt").to(gpu_device)
-            outputs = model.generate(**inputs, max_length=128)
+            outputs = model.generate(inputs, max_new_tokens=1024, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
 
             output = tokenizer.decode(outputs[0][len(inputs[0]):])
             # output = tokenizer.decode(outputs[0], skip_special_tokens=True)
