@@ -32,9 +32,9 @@ if torch.cuda.is_available():
 
 with torch.no_grad():
     if torch.cuda.is_available():
-        output = model.module.generate(input_ids, max_new_tokens=1200, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id, return_full_text=False)
+        output = model.module.generate(input_ids, max_new_tokens=1200, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
     else:
-        output = model.generate(input_ids, max_new_tokens=1200, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id, return_full_text=False)
+        output = model.generate(input_ids, max_new_tokens=1200, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
 
 output_text = tokenizer.decode(output[0], skip_special_tokens=True)
 
