@@ -13,7 +13,7 @@ model_name = "meta-llama/CodeLlama-70b-Instruct-hf"
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
 
 # Move model to device (GPU)
-model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="sequential")
+model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="balanced")
 
 
 # Create a pipeline
