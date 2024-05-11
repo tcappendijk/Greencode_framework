@@ -14,7 +14,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir
 model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16)
 
 # Create a pipeline
-code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, num_workers=1, device=0)
+code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, num_workers=1, device=8)
 
 # Generate code for an input string
 input_string = "Write a python function to calculate the factorial of a number"
