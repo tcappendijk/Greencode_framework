@@ -13,32 +13,29 @@ from torch.nn.parallel import DataParallel
 custom_cache_dir = "/data/volume_2"
 
 token = "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"
-model_name = "meta-llama/CodeLlama-13b-Instruct-hf"
+model_name = "meta-llama/CodeLlama-70b-Instruct-hf"
 
-model_names = ['meta-llama/CodeLlama-7b-Python-hf', 'meta-llama/CodeLlama-13b-Python-hf', 'meta-llama/CodeLlama-34b-Python-hf', 'meta-llama/CodeLlama-70b-Python-hf', 'meta-llama/CodeLlama-7b-hf', 'meta-llama/CodeLlama-13b-hf', 'meta-llama/CodeLlama-34b-hf', 'meta-llama/CodeLlama-70b-hf']
+tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
 
-for model_name in model_names:
-    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True, torch_dtype=torch.bfloat16)
 
-    model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True, torch_dtype=torch.bfloat16)
+if torch.cuda.is_available():
+    model = model.cuda()
+    model = DataParallel(model)
 
-# if torch.cuda.is_available():
-#     model = model.cuda()
-#     model = DataParallel(model)
+input_text = "Write a quick sort algorithm without test cases. Name the function quick_sort"
 
-# input_text = "Write a quick sort algorithm without test cases. Name the function quick_sort"
+input_ids = tokenizer.encode(input_text, return_tensors="pt")
 
-# input_ids = tokenizer.encode(input_text, return_tensors="pt")
+if torch.cuda.is_available():
+    input_ids = input_ids.cuda()
 
-# if torch.cuda.is_available():
-#     input_ids = input_ids.cuda()
+with torch.no_grad():
+    if torch.cuda.is_available():
+        output = model.module.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
+    else:
+        output = model.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
 
-# with torch.no_grad():
-#     if torch.cuda.is_available():
-#         output = model.module.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
-#     else:
-#         output = model.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
+output_text = tokenizer.decode(output[0], skip_special_tokens=True)
 
-# output_text = tokenizer.decode(output[0], skip_special_tokens=True)
-
-# print(output_text)
+print(output_text)
