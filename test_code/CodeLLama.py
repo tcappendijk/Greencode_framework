@@ -30,6 +30,8 @@ input_ids = tokenizer.encode(input_text, return_tensors="pt")
 if torch.cuda.is_available():
     input_ids = input_ids.cuda()
 
+print(input_ids)
+
 with torch.no_grad():
     if torch.cuda.is_available():
         output = model.module.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
