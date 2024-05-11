@@ -28,5 +28,5 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 token = "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"
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/CodeLlama-7b-Instruct-hf", token=token)
-model = AutoModelForCausalLM.from_pretrained("meta-llama/CodeLlama-7b-Instruct-hf", token=token)
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/CodeLlama-7b-Instruct-hf", token=token, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("meta-llama/CodeLlama-7b-Instruct-hf", token=token, trust_remote_code=True)
