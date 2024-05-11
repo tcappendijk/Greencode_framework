@@ -1,45 +1,23 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-import torch.distributed as dist
-from torch.nn.parallel import DistributedDataParallel as DDP
+from transformers import pipeline
 import os
-import torch.distributed as dist
 
-# Initialize distributed training
-torch.distributed.init_process_group(backend='nccl')
+# Set environment variable to specify CUDA_VISIBLE_DEVICES
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"  # Specify the GPUs you want to use
 
-# Set the device
-device = torch.device("cuda")
-
-# Set the number of processes and rank
-world_size = torch.distributed.get_world_size()
-rank = torch.distributed.get_rank()
-
-# Initialize distributed training only if it's not already initialized
-if not dist.is_initialized():
-    # Set environment variable to specify CUDA_VISIBLE_DEVICES
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(rank)  # Assign different GPU to each rank
-
-    # Initialize distributed training
-    dist.init_process_group(backend='nccl')
-
-# Set the device
-device = torch.device("cuda")
-
-# Set up the model and tokenizer
 custom_cache_dir = "/data/volume_2"
 token = "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"
 model_name = "meta-llama/CodeLlama-7b-Instruct-hf"
 
-# Ensure each process loads the model independently
-model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16)
-model.to(device)
-
-# Wrap the model with DistributedDataParallel
-model = DDP(model)
-
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
 
+# Move model to device (GPU)
+model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="auto")
+model.to("cuda")
+
+while True:
+    pass
 
 # # Create a pipeline
 # code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, num_workers=8, device=0, framework='pt', max_length=1000, pad_token_id=tokenizer.eos_token_id)
