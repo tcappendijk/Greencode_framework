@@ -33,9 +33,9 @@ if torch.cuda.is_available():
 # Generate output sequence
 with torch.no_grad():
     if torch.cuda.is_available():
-        output = model.module.generate(input_ids)
+        output = model.module.generate(input_ids, max_new_tokens=100)  # Adjust max_new_tokens as needed
     else:
-        output = model.generate(input_ids)
+        output = model.generate(input_ids, max_new_tokens=100)  # Adjust max_new_tokens as needed
 
 # Decode output sequence
 output_text = tokenizer.decode(output[0], skip_special_tokens=True)
