@@ -32,7 +32,10 @@ if torch.cuda.is_available():
 
 # Generate output sequence
 with torch.no_grad():
-    output = model.generate(input_ids)
+    if torch.cuda.is_available():
+        output = model.module.generate(input_ids)
+    else:
+        output = model.generate(input_ids)
 
 # Decode output sequence
 output_text = tokenizer.decode(output[0], skip_special_tokens=True)
