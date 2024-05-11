@@ -23,7 +23,7 @@ if torch.cuda.is_available():
     model = model.cuda()
     model = DataParallel(model)
 
-input_text = "Write a quick sort algorithm. Provide only the code witout test cases. Name the function quick_sort"
+input_text = "Write a quick sort algorithm without test cases. Name the function quick_sort"
 
 input_ids = tokenizer.encode(input_text, return_tensors="pt")
 
@@ -32,9 +32,9 @@ if torch.cuda.is_available():
 
 with torch.no_grad():
     if torch.cuda.is_available():
-        output = model.module.generate(input_ids, max_new_tokens=1200, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
+        output = model.module.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
     else:
-        output = model.generate(input_ids, max_new_tokens=1200, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
+        output = model.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
 
 output_text = tokenizer.decode(output[0], skip_special_tokens=True)
 
