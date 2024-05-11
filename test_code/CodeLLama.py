@@ -3,6 +3,11 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 custom_cache_dir = "/data/volume_2"
 
 token = "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"
-model_name = "meta-llama/CodeLlama-70b-hf"
+model_name = "meta-llama/CodeLlama-7b-Instruct-hf"
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
+
+input_text = "#write a quick sort algorithm. Only provide the code with no additional text"
+inputs = tokenizer(input_text, return_tensors="pt")
+outputs = model.generate(**inputs, max_length=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
