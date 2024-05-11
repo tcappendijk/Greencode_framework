@@ -16,6 +16,9 @@ tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir
 model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16)
 model.to("cuda")
 
+while True:
+    pass
+
 # # Create a pipeline
 # code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, num_workers=8, device=0, framework='pt', max_length=1000, pad_token_id=tokenizer.eos_token_id)
 
