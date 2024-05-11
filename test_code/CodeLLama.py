@@ -3,6 +3,7 @@ import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 import os
+import torch.distributed as dist
 
 # Initialize distributed training
 torch.distributed.init_process_group(backend='nccl')
@@ -14,11 +15,13 @@ device = torch.device("cuda")
 world_size = torch.distributed.get_world_size()
 rank = torch.distributed.get_rank()
 
-# Set environment variable to specify CUDA_VISIBLE_DEVICES
-os.environ["CUDA_VISIBLE_DEVICES"] = str(rank)  # Assign different GPU to each rank
+# Initialize distributed training only if it's not already initialized
+if not dist.is_initialized():
+    # Set environment variable to specify CUDA_VISIBLE_DEVICES
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(rank)  # Assign different GPU to each rank
 
-# Initialize distributed training
-torch.distributed.init_process_group(backend='nccl')
+    # Initialize distributed training
+    dist.init_process_group(backend='nccl')
 
 # Set the device
 device = torch.device("cuda")
@@ -36,8 +39,6 @@ model.to(device)
 model = DDP(model)
 
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
-
-# Define any additional functions or data loading steps as needed
 
 
 # # Create a pipeline
