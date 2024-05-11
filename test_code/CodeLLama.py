@@ -1,10 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 from transformers import pipeline
-import os
-
-# Set environment variable to specify CUDA_VISIBLE_DEVICES
-# os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"  # Specify the GPUs you want to use
 
 custom_cache_dir = "/data/volume_2"
 token = "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"
@@ -18,6 +14,6 @@ code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, f
 
 # Generate code for an input string
 input_string = "Write a python function to calculate the factorial of a number"
-generated_code = code_generator(input_string, max_length=100)[0]['generated_text']
+generated_code = code_generator(input_string, max_length=100)[0]
 print(generated_code)
 
