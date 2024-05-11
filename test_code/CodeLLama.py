@@ -27,6 +27,9 @@
 # Load model directly
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+custom_cache_dir = "/data/volume_2"
+
 token = "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"
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/CodeLlama-7b-Instruct-hf", token=token, trust_remote_code=True)
-model = AutoModelForCausalLM.from_pretrained("meta-llama/CodeLlama-7b-Instruct-hf", token=token, trust_remote_code=True)
+
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/CodeLlama-7b-Instruct-hf", cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("meta-llama/CodeLlama-7b-Instruct-hf", cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
