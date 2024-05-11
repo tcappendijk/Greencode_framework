@@ -2,6 +2,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
+import os
 
 # Initialize distributed training
 torch.distributed.init_process_group(backend='nccl')
@@ -12,6 +13,15 @@ device = torch.device("cuda")
 # Set the number of processes and rank
 world_size = torch.distributed.get_world_size()
 rank = torch.distributed.get_rank()
+
+# Set environment variable to specify CUDA_VISIBLE_DEVICES
+os.environ["CUDA_VISIBLE_DEVICES"] = str(rank)  # Assign different GPU to each rank
+
+# Initialize distributed training
+torch.distributed.init_process_group(backend='nccl')
+
+# Set the device
+device = torch.device("cuda")
 
 # Set up the model and tokenizer
 custom_cache_dir = "/data/volume_2"
