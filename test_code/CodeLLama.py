@@ -14,6 +14,6 @@ code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, f
 
 # Generate code for an input string
 input_string = "Write a python function to calculate the factorial of a number, only provide the code with no additional text."
-generated_code = code_generator(input_string, max_length=1000)
+generated_code = code_generator(input_string, max_length=1000)[0]['generated_text']
 print(generated_code)
 
