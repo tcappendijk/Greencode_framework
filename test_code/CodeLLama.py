@@ -8,7 +8,7 @@ import os
 
 custom_cache_dir = "/data/volume_2"
 token = "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"
-model_name = "meta-llama/CodeLlama-7b-Instruct-hf"
+model_name = "meta-llama/CodeLlama-70b-Instruct-hf"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
 
@@ -17,7 +17,7 @@ model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_
 
 
 # Create a pipeline
-code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, num_workers=8, device=0, framework='pt', max_length=1000, pad_token_id=tokenizer.eos_token_id, device_map="sequential")
+code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', max_length=1000, pad_token_id=tokenizer.eos_token_id)
 
 # Generate code for an input string
 input_string = "Write a python function to calculate the factorial of a number"
