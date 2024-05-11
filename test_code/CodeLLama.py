@@ -3,42 +3,51 @@ import torch
 from torch.nn.parallel import DataParallel
 from torch.nn.parallel import DistributedDataParallel as DDP
 import torch.distributed as dist
+from transformers import pipeline
 
 dist.init_process_group(backend='nccl', rank=0, world_size=8)
 
 custom_cache_dir = "/data/volume_2"
 
 token = "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"
-model_name = "meta-llama/CodeLlama-70b-Instruct-hf"
+model_name = "meta-llama/CodeLlama-7b-Instruct-hf"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
 
 model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16)
 
-device_ids = [0, 1, 2, 3, 4, 5, 6, 7]
+# Create a pipeline
+code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, num_workers=1)
 
-if torch.cuda.is_available():
-    model = DDP(model)
-    print("Model is now DDP")
-    # model = DataParallel(model, device_ids=device_ids)
-    # model = model.cuda()  # Move model to GPU
-    # print("Model is now DataParallel")
+# Generate code for an input string
+input_string = "Write a python function to calculate the factorial of a number"
+generated_code = code_generator(input_string, max_length=100)[0]['generated_text']
+print(generated_code)
 
-input_text = "Write a quick sort algorithm without test cases. Name the function quick_sort"
+# device_ids = [0, 1, 2, 3, 4, 5, 6, 7]
 
-input_ids = tokenizer.encode(input_text, return_tensors="pt")
+# if torch.cuda.is_available():
+#     model = DDP(model)
+#     print("Model is now DDP")
+#     # model = DataParallel(model, device_ids=device_ids)
+#     # model = model.cuda()  # Move model to GPU
+#     # print("Model is now DataParallel")
 
-if torch.cuda.is_available():
-    input_ids = input_ids.cuda()
+# input_text = "Write a quick sort algorithm without test cases. Name the function quick_sort"
 
-print(input_ids)
+# input_ids = tokenizer.encode(input_text, return_tensors="pt")
 
-with torch.no_grad():
-    if torch.cuda.is_available():
-        output = model.module.generate(input_ids.cuda(), max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
-    else:
-        output = model.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
+# if torch.cuda.is_available():
+#     input_ids = input_ids.cuda()
 
-output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+# print(input_ids)
 
-print(output_text)
+# with torch.no_grad():
+#     if torch.cuda.is_available():
+#         output = model.module.generate(input_ids.cuda(), max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
+#     else:
+#         output = model.generate(input_ids, max_new_tokens=1200, pad_token_id=tokenizer.eos_token_id)
+
+# output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+
+# print(output_text)
