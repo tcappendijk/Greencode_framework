@@ -1,43 +1,39 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
+# from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-from torch.nn.parallel import DataParallel
+# from torch.nn.parallel import DistributedDataParallel
 
-# Custom cache directory
-custom_cache_dir = "/data/volume_2"
+num_devices = torch.cuda.device_count()
 
-# Token and model name
-token = "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"
-model_name = "meta-llama/CodeLlama-7b-Instruct-hf"
+# Print available CUDA devices and set one
+for i in range(num_devices):
+    print(f"Device {i}: {torch.cuda.get_device_name(i)}")
 
-# Load tokenizer
-tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
+# custom_cache_dir = "/data/volume_2"
 
-# Load model
-model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True, torch_dtype=torch.bfloat16)
+# token = "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"
+# model_name = "meta-llama/CodeLlama-7b-Instruct-hf"
 
-# Move model to CUDA if available and wrap with DataParallel
-if torch.cuda.is_available():
-    model = model.cuda()
-    model = DataParallel(model)
+# tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
 
-# Input text
-input_text = "#write a quick sort algorithm. Provide only the code. Name the function quick_sort"
+# model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True, torch_dtype=torch.bfloat16)
 
-# Tokenize input text
-input_ids = tokenizer.encode(input_text, return_tensors="pt")
+# if torch.cuda.is_available():
+#     model = model.cuda()
+#     model = DistributedDataParallel(model)
 
-# Move input to CUDA if available
-if torch.cuda.is_available():
-    input_ids = input_ids.cuda()
+# input_text = "#write a quick sort algorithm. Provide only the code. Name the function quick_sort"
 
-# Generate output sequence
-with torch.no_grad():
-    if torch.cuda.is_available():
-        output = model.module.generate(input_ids, max_new_tokens=100)  # Adjust max_new_tokens as needed
-    else:
-        output = model.generate(input_ids, max_new_tokens=100)  # Adjust max_new_tokens as needed
+# input_ids = tokenizer.encode(input_text, return_tensors="pt")
 
-# Decode output sequence
-output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+# if torch.cuda.is_available():
+#     input_ids = input_ids.cuda()
 
-print(output_text)
+# with torch.no_grad():
+#     if torch.cuda.is_available():
+#         output = model.module.generate(input_ids, max_new_tokens=1200)
+#     else:
+#         output = model.generate(input_ids, max_new_tokens=1200)
+
+# output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+
+# print(output_text)
