@@ -1,9 +1,11 @@
 from vllm import LLM, SamplingParams
 
+
+custom_cache_dir = "/data/volume_2"
 tp_size = 4 # Tensor Parallelism
-sampling_params = SamplingParams(temperature=0.7, top_p=0.9, max_tokens=100)
+sampling_params = SamplingParams(temperature=0.7, top_p=0.9, max_tokens=320)
 model_name = "deepseek-ai/deepseek-coder-6.7b-base"
-llm = LLM(model=model_name, trust_remote_code=True, gpu_memory_utilization=0.9, tensor_parallel_size=tp_size)
+llm = LLM(model=model_name, trust_remote_code=True, gpu_memory_utilization=0.9, tensor_parallel_size=tp_size, cache_dir=custom_cache_dir)
 
 prompts = [
     "If everyone in a country loves one another,",
