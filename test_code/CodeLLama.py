@@ -4,9 +4,11 @@ import torch
 
 num_devices = torch.cuda.device_count()
 
-# Print available CUDA devices and set one
+device_ids = []
 for i in range(num_devices):
-    print(f"Device {i}: {torch.cuda.get_device_name(i)}")
+    device_ids.append(i)
+
+print(device_ids)
 
 # custom_cache_dir = "/data/volume_2"
 
