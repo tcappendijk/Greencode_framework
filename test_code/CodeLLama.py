@@ -1,13 +1,13 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-from torch.nn.parallel import DistributedDataParallel
+from torch.nn.parallel import DataParallel
 
-num_devices = torch.cuda.device_count()
+# num_devices = torch.cuda.device_count()
 
-device_ids = []
-for i in range(num_devices):
-    device_ids.append(i)
-    torch.cuda.set_device(i)
+# device_ids = []
+# for i in range(num_devices):
+#     device_ids.append(i)
+#     torch.cuda.set_device(i)
 
 
 custom_cache_dir = "/data/volume_2"
@@ -21,7 +21,7 @@ model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_
 
 if torch.cuda.is_available():
     model = model.cuda()
-    model = DistributedDataParallel(model, device_ids=device_ids, output_device=device_ids[0])
+    model = DataParallel(model)
 
 input_text = "#write a quick sort algorithm. Provide only the code. Name the function quick_sort"
 
