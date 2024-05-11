@@ -1,6 +1,9 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 from torch.nn.parallel import DataParallel
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+dist.init_process_group(backend='nccl')
 
 custom_cache_dir = "/data/volume_2"
 
@@ -14,9 +17,11 @@ model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_
 device_ids = [0, 1, 2, 3, 4, 5, 6, 7]
 
 if torch.cuda.is_available():
-    model = DataParallel(model, device_ids=device_ids)
-    model = model.cuda()  # Move model to GPU
-    print("Model is now DataParallel")
+    model = DDP(model)
+    print("Model is now DDP")
+    # model = DataParallel(model, device_ids=device_ids)
+    # model = model.cuda()  # Move model to GPU
+    # print("Model is now DataParallel")
 
 input_text = "Write a quick sort algorithm without test cases. Name the function quick_sort"
 
