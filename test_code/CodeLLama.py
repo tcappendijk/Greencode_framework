@@ -22,8 +22,8 @@ model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_
 device_ids = [0, 1, 2, 3, 4, 5, 6, 7]
 
 if torch.cuda.is_available():
-    model = model.cuda()
-    print("Model is on cuda")
+    # model = model.cuda()
+    # print("Model is on cuda") 
     model = DataParallel(model, device_ids=device_ids)
     print("Model is now DataParallel")
 
