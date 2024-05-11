@@ -4,7 +4,7 @@ from torch.nn.parallel import DataParallel
 from torch.nn.parallel import DistributedDataParallel as DDP
 import torch.distributed as dist
 
-dist.init_process_group(backend='nccl')
+dist.init_process_group(backend='nccl', rank=0, world_size=1, world_size=8)
 
 custom_cache_dir = "/data/volume_2"
 
