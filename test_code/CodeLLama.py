@@ -1,14 +1,11 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-from torch.nn.parallel import DataParallel
-from torch.nn.parallel import DistributedDataParallel as DDP
+# from torch.nn.parallel import DataParallel
+# from torch.nn.parallel import DistributedDataParallel as DDP
 import torch.distributed as dist
 from transformers import pipeline
 
-dist.init_process_group(backend='nccl', rank=0, world_size=8)
-
 custom_cache_dir = "/data/volume_2"
-
 token = "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"
 model_name = "meta-llama/CodeLlama-7b-Instruct-hf"
 
