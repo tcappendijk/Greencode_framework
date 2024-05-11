@@ -13,7 +13,7 @@ from torch.nn.parallel import DataParallel
 custom_cache_dir = "/data/volume_2"
 
 token = "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"
-model_name = "meta-llama/CodeLlama-34b-Instruct-hf"
+model_name = "meta-llama/CodeLlama-13b-Instruct-hf"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, trust_remote_code=True)
 
