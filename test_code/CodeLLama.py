@@ -7,7 +7,7 @@ from transformers import pipeline
 
 custom_cache_dir = "/data/volume_2"
 token = "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"
-model_name = "meta-llama/CodeLlama-7b-Instruct-hf"
+model_name = "meta-llama/CodeLlama-70b-Instruct-hf"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
 
