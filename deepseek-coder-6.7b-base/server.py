@@ -3,6 +3,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import subprocess
 import argparse
+from transformers import pipeline
 
 
 def get_gpu_with_most_free_memory():
@@ -46,11 +47,20 @@ def server(host, port):
 
     print("Server started.")
 
-    tokenizer, model, gpu_device = initialize_model()
+    # tokenizer, model, gpu_device = initialize_model()
 
-    if tokenizer is None or model is None or gpu_device is None:
-        print("Error occurred while initializing the model.")
-        return
+    # if tokenizer is None or model is None or gpu_device is None:
+    #     print("Error occurred while initializing the model.")
+    #     return
+
+    # tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
+    # model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="balanced")
+
+    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True, torch_dtype=torch.bfloat16, device_map="balanced")
+
+    code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
+
 
     print("Server is listening...")
 
@@ -65,10 +75,10 @@ def server(host, port):
                 client_socket.close()
                 break
 
-            inputs = tokenizer(prompt, return_tensors="pt").to(gpu_device)
-            outputs = model.generate(**inputs, max_new_tokens=1024, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
+            # inputs = tokenizer(prompt, return_tensors="pt").to(gpu_device)
+            # outputs = model.generate(**inputs, max_new_tokens=1024, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
 
-            output = tokenizer.decode(outputs[0][len(inputs[0]):])
+            output = code_generator(prompt, max_length=1000)[0]['generated_text']
 
             client_socket.sendall(output.encode())
         finally:
