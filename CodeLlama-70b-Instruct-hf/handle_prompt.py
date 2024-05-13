@@ -21,11 +21,7 @@ def main(
         max_batch_size=max_batch_size,
     )
 
-    instructions = [
-        [
-            {
-                "role": "user",
-                "content": """Given the head of a linked list, return the list after sorting it in ascending order.
+    prompts = ["""Given the head of a linked list, return the list after sorting it in ascending order.
 Example 1:
 
 Input: head = [4,2,1,3]
@@ -53,33 +49,16 @@ class ListNode:
         self.next = next
 class Solution:
     def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-""",
-            }
-        ]
-        # [
-        #     {
-        #         "role": "system",
-        #         "content": "Provide answers in JavaScript",
-        #     },
-        #     {
-        #         "role": "user",
-        #         "content": "Write a function that computes the set of sums of all contiguous sublists of a given list.",
-        #     }
-        # ],
-    ]
-    results = generator.chat_completion(
-        instructions,  # type: ignore
+"""]
+    results = generator.text_completion(
+        prompts,
         max_gen_len=max_gen_len,
         temperature=temperature,
         top_p=top_p,
     )
-
-    for instruction, result in zip(instructions, results):
-        for msg in instruction:
-            print(f"{msg['role'].capitalize()}: {msg['content']}\n")
-        print(
-            f"> {result['generation']['role'].capitalize()}: {result['generation']['content']}"
-        )
+    for prompt, result in zip(prompts, results):
+        print(prompt)
+        print(f"> {result['generation']}")
         print("\n==================================\n")
 
 
