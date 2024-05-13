@@ -34,8 +34,6 @@ Constraints:
     The number of nodes in the list is in the range [0, 5 * 104].
     -105 <= Node.val <= 105
 
-Follow up: Can you sort the linked list in O(n logn) time and O(1) memory (i.e. constant space)?
-
 # Definition for singly-linked list.
 class ListNode:
     def __init__(self, val=0, next=None):
