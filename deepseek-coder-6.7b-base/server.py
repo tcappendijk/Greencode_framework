@@ -27,14 +27,14 @@ def server(host, port):
         client_socket, client_address = server_socket.accept()
 
         try:
-            prompt = client_socket.recv(1024)
+            prompt = client_socket.recv(8192)
             prompt = prompt.decode()
 
             if prompt == "exit":
                 client_socket.close()
                 break
 
-            output = code_generator(prompt, max_length=1000)[0]['generated_text']
+            output = code_generator(prompt, max_length=8192)[0]['generated_text']
 
             client_socket.sendall(output.encode())
         finally:
