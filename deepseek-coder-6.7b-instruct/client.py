@@ -10,7 +10,7 @@ def client(prompt: str, host, port):
     try:
         client_socket.sendall(prompt.encode())
 
-        data = client_socket.recv(8192)
+        data = client_socket.recv(2048)
 
         # This print is necessary to be able to read the output from stdout
         print(data.decode())
