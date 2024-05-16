@@ -1,21 +1,38 @@
-from vllm import LLM, SamplingParams
-
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
 custom_cache_dir = "/data/volume_2"
-tp_size = 1 # Tensor Parallelism
-sampling_params = SamplingParams(temperature=0.7, top_p=0.9, max_tokens=320)
-model_name = "deepseek-ai/deepseek-coder-6.7b-base"
-llm = LLM(model=model_name, trust_remote_code=True, gpu_memory_utilization=0.9, tensor_parallel_size=tp_size, cache_dir=custom_cache_dir)
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, cache_dir = custom_cache_dir)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, device_map="sequential", cache_dir = custom_cache_dir)
 
-prompts = [
-    "If everyone in a country loves one another,",
-    "The research should also focus on the technologies",
-    "To determine if the label is correct, we need to"
+messages=[
+    { 'role': 'user', 'content': "write a quick sort algorithm in python."}
 ]
-outputs = llm.generate(prompts, sampling_params)
+inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt")
+# tokenizer.eos_token_id is the id of <|EOT|> token
+outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))
 
-generated_text = [output.outputs[0].text for output in outputs]
-print(generated_text)
+
+
+# from vllm import LLM, SamplingParams
+
+
+# custom_cache_dir = "/data/volume_2"
+# tp_size = 1 # Tensor Parallelism
+# sampling_params = SamplingParams(temperature=0.7, top_p=0.9, max_tokens=320)
+# model_name = "deepseek-ai/deepseek-coder-6.7b-base"
+# llm = LLM(model=model_name, trust_remote_code=True, gpu_memory_utilization=0.9, tensor_parallel_size=tp_size, cache_dir=custom_cache_dir)
+
+# prompts = [
+#     "If everyone in a country loves one another,",
+#     "The research should also focus on the technologies",
+#     "To determine if the label is correct, we need to"
+# ]
+# outputs = llm.generate(prompts, sampling_params)
+
+# generated_text = [output.outputs[0].text for output in outputs]
+# print(generated_text)
 
 # # deepseek-coder-6.7b-base
 
