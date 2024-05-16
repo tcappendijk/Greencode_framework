@@ -56,3 +56,6 @@ class Solution:
 # model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="balanced")
 
 # generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
+generated_code = code_generator(input_string, max_length=1000)
+print(generated_code)
+print(generated_code[0]['generated_text'])
