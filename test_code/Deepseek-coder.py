@@ -5,7 +5,7 @@ custom_cache_dir = "/data/volume_2"
 tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, cache_dir = custom_cache_dir)
 model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, device_map="sequential", cache_dir = custom_cache_dir)
 
-code_generator = pipeline('text2text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
+code_generator = pipeline('SeamlessM4Tv2ForTextToText', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
 input = "Write a quicksort algorithm in python."
 generated_code = code_generator(input)
 print(generated_code)
