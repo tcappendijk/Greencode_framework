@@ -1,15 +1,21 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+from transformers import pipeline
 
 custom_cache_dir = "/data/volume_2"
-tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, cache_dir = custom_cache_dir)
-model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, device_map="sequential", cache_dir = custom_cache_dir)
+token = "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"
+model_name = "deepseek-ai/deepseek-coder-33b-instruct"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
+
+model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="balanced")
 
 code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
-input = "Write a quicksort algorithm in python."
-generated_code = code_generator(input)
-print(generated_code)
 
+input_string = "Write a quicksort algorithm in python."
+generated_code = code_generator(input_string, max_length=1000)
+print(generated_code)
+print(generated_code[0]['generated_text'])
 
 
 # from vllm import LLM, SamplingParams
