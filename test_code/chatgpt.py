@@ -13,8 +13,8 @@ model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_
 code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
 
 # Generate code for an input string
-input_string = "I have a code problem in a prompt. The prompt is: Write a quicksort algorithm in python. Make this prompt generating code that consumes less energy"
+input_string = "Write a quicksort algorithm in python."
 
-generated_code = code_generator(input_string, max_length=1000)
+generated_code = code_generator(input_string)
 print(generated_code)
 print(generated_code[0]['generated_text'])
