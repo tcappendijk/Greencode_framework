@@ -3,10 +3,9 @@ import torch
 from transformers import pipeline
 import argparse
 
-def generate_code(prompt, temperature=0.2, top_p=0.95, max_length=512):
+def generate_code(prompt, model_name="meta-llama/CodeLlama-70b-Instruct-hf", temperature=0.2, top_p=0.95, max_length=512):
     custom_cache_dir = "/data/volume_2"
     token = "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"
-    model_name = "meta-llama/CodeLlama-70b-Instruct-hf"
 
     tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, truncation=True)
 
@@ -23,6 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("--temperature", type=str, help="Temperature value of the model")
     parser.add_argument("--top_p", type=str, help="Top p value of the model")
     parser.add_argument("--max_length", type=str, help="Maximum sequence length")
+    parser.add_argument("--model_name", type=str, help="Model name")
 
     args = parser.parse_args()
 
@@ -30,5 +30,6 @@ if __name__ == "__main__":
     temperature = args.temperature
     top_p = args.top_p
     max_seq_len = args.max_length
+    model_name = args.model_name
 
-    generate_code(prompt, temperature, top_p, max_seq_len)
+    generate_code(prompt, temperature, top_p, max_seq_len, model_name)
