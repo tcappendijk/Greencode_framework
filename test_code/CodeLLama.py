@@ -44,6 +44,6 @@ class Solution:
 """
 
 
-generated_code = code_generator(input_string, do_sample=True, temperature=0.7, top_p=0.95,num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
+generated_code = code_generator(input_string, do_sample=True, temperature=0.7, top_p=0.95, max_new_tokens = 512, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
 print(generated_code)
 print(generated_code[0]['generated_text'])
