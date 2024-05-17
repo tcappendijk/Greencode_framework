@@ -50,7 +50,7 @@ def generate_code(input_string):
 
     code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
 
-    generated_code = code_generator(input_string, do_sample=True, temperature=0.2, top_p=0.95, truncation=True, padding=False, max_length=512, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
+    generated_code = code_generator(input_string, temperature=0.2, truncation=True, padding=False, max_length=512, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
     print(generated_code[0]['generated_text'])
 
 if __name__ == "__main__":
