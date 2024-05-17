@@ -8,7 +8,7 @@ def generate_code(input_string):
     token = "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"
     model_name = "meta-llama/CodeLlama-70b-Instruct-hf"
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, Truncation=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, truncation=True)
 
     model = LlamaForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="balanced")
 
