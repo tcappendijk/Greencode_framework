@@ -32,4 +32,4 @@ if __name__ == "__main__":
     max_seq_len = args.max_length
     model_name = args.model_name
 
-    generate_code(prompt, temperature, top_p, max_seq_len, model_name)
+    generate_code(prompt)
