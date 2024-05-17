@@ -13,7 +13,7 @@ def generate_code(prompt, model_name, max_length):
 
     code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
 
-    generated_code = code_generator(prompt, truncation=True, padding=False, max_length=max_length, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
+    generated_code = code_generator(prompt, truncation=True, padding=True, max_length=max_length, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
     print(generated_code[0]['generated_text'])
 
 if __name__ == "__main__":
