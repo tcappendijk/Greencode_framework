@@ -13,7 +13,7 @@ model = LlamaForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir,
 code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
 
 # Generate code for an input string
-input_string = """Given the head of a linked list, return the list after sorting it in ascending order. Fill in the class Solution.
+input_string = """Given the head of a linked list, return the list after sorting it in ascending order.
 Example 1:
 
 Input: head = [4,2,1,3]
@@ -44,6 +44,6 @@ class Solution:
 """
 
 
-generated_code = code_generator(input_string, do_sample=True, temperature=0.7, top_p=0.95, max_new_tokens = 256, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
+generated_code = code_generator(input_string, do_sample=True, temperature=0.2, top_p=0.95, max_new_tokens = 256, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
 print(generated_code)
 print(generated_code[0]['generated_text'])
