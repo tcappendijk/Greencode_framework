@@ -20,9 +20,8 @@ def generate_code(prompt, model_name, max_length):
 
     # # Redirect stdout to a temporary buffer
     # stdout_backup = sys.stdout
-    sys.stdout = open('temp.txt', 'w', file=sys.stderr)
 
-    print(generated_code[0]['generated_text'])
+    print(generated_code[0]['generated_text'], file=sys.stderr)
 
     # # Restore stdout and read the contents of the temporary buffer
     # sys.stdout.close()
