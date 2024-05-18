@@ -20,7 +20,7 @@ def generate_code(prompt, model_name, max_length):
 
 
     print("Here is the code:")
-    print(generated_code[0]['generated_text'], file=sys.stderr)
+    print(generated_code[0]['generated_text'])
 
 
 if __name__ == "__main__":
