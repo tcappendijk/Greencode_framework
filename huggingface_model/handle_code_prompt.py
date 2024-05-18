@@ -3,7 +3,6 @@ import torch
 from transformers import pipeline
 import argparse
 import sys
-import os
 
 def generate_code(prompt, model_name, max_length):
     custom_cache_dir = "/data/volume_2"
@@ -19,20 +18,10 @@ def generate_code(prompt, model_name, max_length):
 
     generated_code = code_generator(prompt, truncation=True, padding=True, max_length=max_length, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
 
-    # # Redirect stdout to a temporary buffer
-    # stdout_backup = sys.stdout
 
-    os.system('clear')
+    print("Here is the code:")
     print(generated_code[0]['generated_text'], file=sys.stderr)
 
-    # # Restore stdout and read the contents of the temporary buffer
-    # sys.stdout.close()
-    # sys.stdout = stdout_backup
-
-    # with open('temp.txt', 'r') as f:
-    #     cleaned_output = f.read()
-
-    # print(cleaned_output)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Code Generation")
