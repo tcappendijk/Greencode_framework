@@ -15,11 +15,9 @@ def server(host, port):
 
     print("Server started.")
 
-    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True, torch_dtype=torch.bfloat16, device_map="balanced")
-
-    code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
-
+    custom_cache_dir = "/data/volume_2"
+    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True, cache_dir=custom_cache_dir)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True, cache_dir=custom_cache_dir).cuda()
 
     print("Server is listening...")
 
@@ -36,8 +34,10 @@ def server(host, port):
                 client_socket.close()
                 break
 
-            output = code_generator(prompt, max_length=max_length)[0]['generated_text']
+            inputs = tokenizer(prompt, return_tensors="pt").cuda()
+            outputs = model.generate(**inputs, inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
 
+            output = tokenizer.decode(outputs[0], skip_special_tokens=True)
             client_socket.sendall(output.encode())
         finally:
             client_socket.close()
