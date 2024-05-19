@@ -1,21 +1,65 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-from transformers import pipeline
 
 custom_cache_dir = "/data/volume_2"
-token = "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"
-model_name = "deepseek-ai/deepseek-coder-33b-instruct"
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, cache_dir=custom_cache_dir)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, cache_dir=custom_cache_dir).cuda()
 
-tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
+prompt = """Given the head of a linked list, return the list after sorting it in ascending order.
 
-model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="sequential")
 
-code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer)
 
-input_string = "Write a quicksort algorithm"
-generated_code = code_generator(input_string, return_text=True, return_full_text = True)
-print(generated_code)
-print(generated_code[0]['generated_text'])
+Example 1:
+
+Input: head = [4,2,1,3]
+Output: [1,2,3,4]
+
+Example 2:
+
+Input: head = [-1,5,3,4,0]
+Output: [-1,0,3,4,5]
+
+Example 3:
+
+Input: head = []
+Output: []
+
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+class Solution:
+    def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+
+"""
+messages=[
+    { 'role': 'user', 'content': prompt}
+]
+inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
+# tokenizer.eos_token_id is the id of <|EOT|> token
+outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))
+
+
+
+# from transformers import AutoTokenizer, AutoModelForCausalLM
+# import torch
+# from transformers import pipeline
+
+# token = "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"
+# model_name = "deepseek-ai/deepseek-coder-33b-instruct"
+
+# tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token)
+
+# model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=custom_cache_dir, token=token, torch_dtype=torch.bfloat16, device_map="sequential")
+
+# code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer)
+
+# input_string = "Write a quicksort algorithm"
+# generated_code = code_generator(input_string, return_full_text = False)
+# print(generated_code)
+# print(generated_code[0]['generated_text'])
 
 
 # from vllm import LLM, SamplingParams
