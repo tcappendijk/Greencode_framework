@@ -29,10 +29,9 @@ def main(
         temperature=temperature,
         top_p=top_p,
     )
-    for prompt, result in zip(prompts, results):
-        print(prompt)
-        print(f"> {result['generation']}")
-        print("\n==================================\n")
+    for result in results:
+        print("Here is the code:")
+        print({result['generation']})
 
 
 if __name__ == "__main__":
