@@ -32,10 +32,9 @@ class Solution:
 
 """
 
-inputs = tokenizer(prompt, return_tensors="pt").cuda()
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 outputs = model.generate(**inputs, max_length=128)
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
-
 # messages=[
 #     { 'role': 'user', 'content': prompt}
 # ]
