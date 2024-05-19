@@ -11,9 +11,9 @@ def main(
     prompt: str,
     temperature: float = 0.2,
     top_p: float = 0.95,
-    max_seq_len: int = 512,
+    max_seq_len: int = 768,
     max_batch_size: int = 8,
-    max_gen_len: Optional[int] = 1024,
+    max_gen_len: Optional[int] = None,
 ):
     generator = Llama.build(
         ckpt_dir=ckpt_dir,
