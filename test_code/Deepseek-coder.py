@@ -2,8 +2,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
 custom_cache_dir = "/data/volume_2"
-tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, cache_dir=custom_cache_dir)
-model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, cache_dir=custom_cache_dir).cuda()
+tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True, cache_dir=custom_cache_dir)
+model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-base", trust_remote_code=True, cache_dir=custom_cache_dir).cuda()
 
 prompt = """Given the head of a linked list, return the list after sorting it in ascending order.
 
@@ -31,15 +31,20 @@ class Solution:
     def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:
 
 """
-messages=[
-    { 'role': 'user', 'content': prompt}
-]
-inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
-# tokenizer.eos_token_id is the id of <|EOT|> token
-outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
-print(outputs)
-print(tokenizer.decode(outputs[0]))
-print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))
+
+inputs = tokenizer(prompt, return_tensors="pt").cuda()
+outputs = model.generate(**inputs, max_length=128)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+
+# messages=[
+#     { 'role': 'user', 'content': prompt}
+# ]
+# inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
+# # tokenizer.eos_token_id is the id of <|EOT|> token
+# outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+# print(outputs)
+# print(tokenizer.decode(outputs[0]))
+# print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))
 
 
 
