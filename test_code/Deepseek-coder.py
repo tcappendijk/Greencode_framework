@@ -33,7 +33,7 @@ class Solution:
 """
 
 inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-outputs = model.generate(**inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+outputs = model.generate(**inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id, pad_token_id=tokenizer.eos_token_id)
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 # messages=[
 #     { 'role': 'user', 'content': prompt}
