@@ -1,8 +1,6 @@
 import socket
 from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
 import argparse
-from transformers import pipeline
 
 
 def server(host, port):
@@ -35,7 +33,7 @@ def server(host, port):
                 break
 
             inputs = tokenizer(prompt, return_tensors="pt").cuda()
-            outputs = model.generate(**inputs, inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+            outputs = model.generate(**inputs, max_new_tokens=512)
 
             output = tokenizer.decode(outputs[0], skip_special_tokens=True)
             client_socket.sendall(output.encode())
