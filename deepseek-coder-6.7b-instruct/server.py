@@ -2,7 +2,6 @@ import socket
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import argparse
-from transformers import pipeline
 
 
 def server(host, port):
@@ -15,10 +14,9 @@ def server(host, port):
 
     print("Server started.")
 
-    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, device_map="balanced")
-
-    code_generator = pipeline('text-generation', model=model, tokenizer=tokenizer, framework='pt', pad_token_id=tokenizer.eos_token_id)
+    custom_cache_dir = "/data/volume_2"
+    tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, cache_dir=custom_cache_dir)
+    model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-instruct", trust_remote_code=True, torch_dtype=torch.bfloat16, cache_dir=custom_cache_dir).cuda()
 
     print("Server is listening...")
 
@@ -35,7 +33,14 @@ def server(host, port):
                 client_socket.close()
                 break
 
-            output = code_generator(prompt, max_length=max_length)[0]['generated_text']
+            messages=[
+                { 'role': 'user', 'content': prompt}
+            ]
+
+            inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
+
+            outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+            output = tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True)
 
             client_socket.sendall(output.encode())
         finally:
