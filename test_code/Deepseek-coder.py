@@ -7,8 +7,6 @@ model = AutoModelForCausalLM.from_pretrained("deepseek-ai/deepseek-coder-6.7b-in
 
 prompt = """Given the head of a linked list, return the list after sorting it in ascending order.
 
-
-
 Example 1:
 
 Input: head = [4,2,1,3]
@@ -39,6 +37,8 @@ messages=[
 inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(model.device)
 # tokenizer.eos_token_id is the id of <|EOT|> token
 outputs = model.generate(inputs, max_new_tokens=512, do_sample=False, top_k=50, top_p=0.95, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
+print(outputs)
+print(tokenizer.decode(outputs[0]))
 print(tokenizer.decode(outputs[0][len(inputs[0]):], skip_special_tokens=True))
 
 
