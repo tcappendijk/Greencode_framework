@@ -31,7 +31,7 @@ def main(
     )
     for result in results:
         print("Here is the code:")
-        print({result['generation']})
+        print(result['generation'])
 
 
 if __name__ == "__main__":
