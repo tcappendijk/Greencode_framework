@@ -38,7 +38,7 @@ def server(host, port):
                 client_socket.close()
                 break
 
-            output = code_generator(prompt, max_length=max_length, do_sample=True, temperature=0.2, top_p=0.95)
+            output = code_generator(prompt, max_length=max_length)
             output = output[0]['generated_text']
 
             client_socket.sendall(output.encode())
