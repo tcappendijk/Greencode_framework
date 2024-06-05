@@ -1,8 +1,8 @@
-from modules.input_parser import InputParser
-from modules.handle_code_prompt import HandleCodePrompt
+from modules.input_processor import InputProcessor
+from modules.process_code_and_mode_prompt import ProcessCodePrompt
 from modules.check_code_validity import CheckCodeValidity
-from modules.handlers.measurement_tools_handler import MeasurementToolsHandler
 from modules.output_parser import OutputParser
+from modules.measure_statistics import MeasureStatistics
 
 import argparse
 
@@ -11,15 +11,15 @@ def main():
     parser.add_argument("input_file", type=str, help="Input json file")
     args = parser.parse_args()
 
-    input_parser_obj = InputParser(args.input_file)
-    input_parser_obj.parse_input()
+    input_parser_obj = InputProcessor(args.input_file)
+    input_parser_obj.process_input()
 
     mode = input_parser_obj.get_mode()
     prompts = input_parser_obj.get_prompts()
     prompt_labels = input_parser_obj.get_prompt_labels()
 
-    handle_mode_and_code_prompt_obj = HandleCodePrompt(mode, prompts, prompt_labels)
-    outputs = handle_mode_and_code_prompt_obj.handle_code_prompts()
+    process_mode_and_code_prompt_obj = ProcessCodePrompt(mode, prompts, prompt_labels)
+    outputs = process_mode_and_code_prompt_obj.process_code_prompts()
 
     if outputs == []:
         return
@@ -29,13 +29,10 @@ def main():
     check_code_validity_obj = CheckCodeValidity(outputs)
     outputs = check_code_validity_obj.check_code_validity()
 
-    measurement_tools_handler_obj = MeasurementToolsHandler()
+    measurement_tools_handler_obj = MeasureStatistics()
     measurement_tools_handler_obj.initialize_all_tools()
 
-    checked_output = []
-    for output in outputs:
-        output['statistics'] = measurement_tools_handler_obj.measure_all_statistic('python3 ' + output['filename'])
-        checked_output.append(output)
+    checked_output = measurement_tools_handler_obj.measure_statistics(outputs)
 
     output_parser_obj = OutputParser(checked_output)
     print(output_parser_obj.parse_output('output.json'))

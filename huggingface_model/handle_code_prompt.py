@@ -2,7 +2,6 @@ from transformers import AutoTokenizer, LlamaForCausalLM
 import torch
 from transformers import pipeline
 import argparse
-import sys
 
 def generate_code(prompt, model_name, max_length):
     custom_cache_dir = "/data/volume_2"
