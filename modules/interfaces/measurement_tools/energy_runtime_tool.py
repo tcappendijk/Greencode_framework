@@ -70,7 +70,7 @@ class EnergyRunTime(MeasurementToolAdapter):
             energy_values.append(energy)
             runtime_values.append(runtime)
 
-            sleep(10)
+            # sleep(10)
 
         energy_per_second = np.array(energy_values) / np.array(runtime_values)
 
