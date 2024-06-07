@@ -30,7 +30,7 @@ class MeasurementToolAdapter(ABC):
         Args:
             command (str): The command to measure the statistic of.
         Returns:
-            list with one or multiple dictionarie(s): Keys are 'type', 'mean', 'standard_deviation', 'unit'. The type is the type of the
+            list with one or multiple dictionarie(s): Keys are 'type', 'values', 'unit'. The type is the type of the
             statistic, the value is the value of the statistic and the unit is the unit of the statistic. On error, the function should return an empty dictionary. Multiple dictionaries can be returned if multiple statistics are measured. On failure the value of the statistic should be None.
         """
         pass

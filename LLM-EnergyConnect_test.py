@@ -1,5 +1,5 @@
 from modules.input_processor import InputProcessor
-from modules.process_code_and_mode_prompt import ProcessCodePrompt
+from modules.process_code_prompt import ProcessCodePrompt
 from modules.check_code_validity import CheckCodeValidity
 from modules.output_parser import OutputParser
 from modules.measure_statistics import MeasureStatistics

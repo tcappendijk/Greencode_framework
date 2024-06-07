@@ -14,8 +14,9 @@ class Solution:
 nums1 = [i for i in range(-10 ** 6, -10 ** 6 + 1000)]
 nums2 = [i for i in range(10 ** 6 - 1000, 10 ** 6)]
 
-solution_object = Solution()
-assert solution_object.findMedianSortedArrays(nums1, nums2) == -0.50000
+for _ in range(3000000):
+    solution_object = Solution()
+    assert solution_object.findMedianSortedArrays(nums1, nums2) == -0.50000
 
 
 

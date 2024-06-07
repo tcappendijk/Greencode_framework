@@ -24,7 +24,7 @@ class Energy(MeasurementToolAdapter):
 
         if result.returncode != 0:
             print("An error occurred while measuring the floating point operations of command: " + command)
-            return [{'type': 'flops', 'mean': None, 'standard_deviation': None, 'unit': 'flops'}]
+            return [{'type': 'flops', 'values': None, 'unit': 'flops'}]
 
         flops = -1
         for line in result.stderr.split('\n'):
@@ -33,9 +33,9 @@ class Energy(MeasurementToolAdapter):
 
         if flops == -1:
             print("An error occurred while measuring the floating point operations of command: " + command)
-            return [{'type': 'flops', 'mean': None, 'standard_deviation': None, 'unit': 'flops'}]
+            return [{'type': 'flops', 'values': None, 'unit': 'flops'}]
 
-        tool_dict = {'type': 'flops', 'mean': flops, 'standard_deviation': 0, 'unit': 'flops'}
+        tool_dict = {'type': 'flops', 'values':[flops], 'unit': 'flops'}
         return [tool_dict]
 
     def get_name(self):

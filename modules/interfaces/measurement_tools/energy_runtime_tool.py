@@ -36,7 +36,7 @@ class EnergyRunTime(MeasurementToolAdapter):
         self.__idle_energy = idle_energy / seconds_elapsed
         return 1
 
-    def measure_statistics(self, command: str, repeat = 10) -> str:
+    def measure_statistics(self, command: str, repeat = 50) -> str:
 
         if self.__idle_energy == -1:
             print("Idle energy is not initialized")
@@ -53,7 +53,7 @@ class EnergyRunTime(MeasurementToolAdapter):
 
             if result.returncode != 0:
                 print("An error occurred while measuring the energy and runtime of command: " + command)
-                return [{'type': 'energy', 'mean': None, 'standard_deviation': None, 'unit': 'Joules per second'}, {'type': 'runtime', 'mean': None, 'standard_deviation': None, 'unit': 'seconds'}]
+                return [{'type': 'energy', 'values': None, 'unit': 'Joules per second'}, {'type': 'runtime', 'values': None, 'unit': 'seconds'}]
 
             energy = -1
             runtime = -1
@@ -64,8 +64,8 @@ class EnergyRunTime(MeasurementToolAdapter):
                     runtime = float(line.split()[0].replace('.', '').replace(',', '.'))
 
             if energy == -1 or runtime == -1:
-                print("An error occurred while measuring the energy and runtime of command: " + command)
-                return [{'type': 'energy', 'mean': None, 'standard_deviation': None, 'unit': 'Joules per second'}, {'type': 'runtime', 'mean': None, 'standard_deviation': None, 'unit': 'seconds'}]
+                print("An error occurred while measuring the energy or runtime of command: " + command)
+                return [{'type': 'energy', 'values': None, 'unit': 'Joules per second'}, {'type': 'runtime', 'values': None, 'unit': 'seconds'}]
 
             energy_values.append(energy)
             runtime_values.append(runtime)
@@ -73,14 +73,9 @@ class EnergyRunTime(MeasurementToolAdapter):
             sleep(10)
 
         energy_per_second = np.array(energy_values) / np.array(runtime_values)
-        mean_energy_with_idle = np.mean(energy_per_second - self.__idle_energy)
-        std_energy_with_idle = np.std(energy_per_second - self.__idle_energy)
 
-        mean_runtime = np.mean(runtime_values)
-        std_runtime = np.std(runtime_values)
-
-        energy_tool_dict = {'type': 'energy', 'mean': mean_energy_with_idle, 'standard_deviation': std_energy_with_idle, 'unit': 'Joules per second'}
-        runtime_tool_dict = {'type': 'runtime', 'mean': mean_runtime, 'standard_deviation': std_runtime, 'unit': 'seconds'}
+        energy_tool_dict = {'type': 'energy', 'values': list(energy_per_second), 'idle_energy': self.__idle_energy, 'unit': 'Joules per second'}
+        runtime_tool_dict = {'type': 'runtime', 'values' : runtime_values, 'unit': 'seconds'}
         return [energy_tool_dict, runtime_tool_dict]
 
     def get_name(self):
