@@ -1,7 +1,6 @@
 from modules.interfaces.measurement_tools.adapter_abstract import MeasurementToolAdapter
 import subprocess
 import numpy as np
-from time import sleep
 
 
 class EnergyRunTime(MeasurementToolAdapter):
@@ -11,7 +10,7 @@ class EnergyRunTime(MeasurementToolAdapter):
         # Idle energy is the energy consumed by the system when it is idle in Joules per second
         self.__idle_energy = -1
 
-    def initialize(self, time=1000) -> int:
+    def initialize(self, time=1) -> int:
         """
             Returns: 1 if successful, 0 otherwise
 
@@ -70,11 +69,7 @@ class EnergyRunTime(MeasurementToolAdapter):
             energy_values.append(energy)
             runtime_values.append(runtime)
 
-            # sleep(10)
-
-        energy_per_second = np.array(energy_values) / np.array(runtime_values)
-
-        energy_tool_dict = {'type': 'energy', 'values': list(energy_per_second), 'idle_energy': self.__idle_energy, 'unit': 'Joules per second'}
+        energy_tool_dict = {'type': 'energy', 'values': energy_values, 'idle_energy': self.__idle_energy, 'unit': 'Joules per second'}
         runtime_tool_dict = {'type': 'runtime', 'values' : runtime_values, 'unit': 'seconds'}
         return [energy_tool_dict, runtime_tool_dict]
 

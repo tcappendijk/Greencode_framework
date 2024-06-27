@@ -3,8 +3,12 @@
     The two functions that need to be implemented are initialize and
     measure_statistic. Initialize is used to initialize the measurement tool
     if necessary and measure_statistic is used to measure the statistic of the
-    code. This function recieves the filename of the code to measure the
-    statistic of the code inside the file.
+    code. This function recieves the command to measure the statistic of and
+    returns a list with one or multiple dictionaries. The keys of the dictionary
+    are 'type', 'values', 'unit'. The type is the type of the statistic, the value
+    is the value of the statistic and the unit is the unit of the statistic. On error,
+    the function should return an empty dictionary. Multiple dictionaries can be returned
+    if multiple statistics are measured.
 """
 
 from abc import ABC, abstractmethod

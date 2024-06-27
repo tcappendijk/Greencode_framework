@@ -1,0 +1,3 @@
+Give me an energy-optimized solution for this problem,
+Use library functions in the following problem,
+Use a for loop instead of a while loop in the following problem,

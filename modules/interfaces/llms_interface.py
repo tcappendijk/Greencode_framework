@@ -1,5 +1,4 @@
 from modules.interfaces.llms.adapter_abstract import LLMAdapter
-
 import os
 import threading
 import importlib.util

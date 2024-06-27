@@ -1,15 +1,20 @@
 """
-    This file contains the abstract class for the adapater of the LLMs. The two functions
-    that need to be implemented are initialize and handle_code_prompt. Initialize
-    is used to initialize the model and handle_code_prompt is used to handle the
-    code prompt and return the generated code togheter with the name of the model.
+    This file contains the abstract class for the adapater of the LLMs. The
+    four functions that need to be implemented are:
+        - initialize
+        - process_code_prompt
+        - get_name
+        - close
+    The initialize function is used to initialize the model. The process_code_prompt
+    function is used to process the code prompt. The get_name function is used to get
+    the name of the model. The close function is used to close the model.
 """
 
 from abc import ABC, abstractmethod
 
 class LLMAdapter(ABC):
     """
-    Abstract class for the models.
+    Abstract class for the LLMs.
     """
 
     @abstractmethod
@@ -39,6 +44,9 @@ class LLMAdapter(ABC):
         Function to get the name of the model. The name should match the name of the
         file that the model is implemeted in. This is due to error handling where the model
         is referred to by the name of the file.
+
+        Returns:
+            str: The name of the model.
         """
         pass
 
